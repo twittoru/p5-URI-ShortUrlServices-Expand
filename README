@@ -1,0 +1,17 @@
+NAME
+    URI::ShortUrlServices::Expand -
+
+SYNOPSIS
+      use URI::ShortUrlServices::Expand;
+
+DESCRIPTION
+    URI::ShortUrlServices::Expand is
+
+AUTHOR
+    Tor Ozaki <tor.ozaki@gmail.com>
+
+SEE ALSO
+LICENSE
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
