@@ -6,9 +6,16 @@ URI::ShortUrlServices::Expand -
 
   use URI::ShortUrlServices::Expand;
 
+  my $expander = URI::ShortUrlServices::Expand->new;
+  my $url = $expander->expand( 'http://bit.ly/n9wIfh' );
+
+  print $url # https://github.com/twittoru/p5-URI-ShortUrlServices-Expand;
+
+
 # DESCRIPTION
 
-URI::ShortUrlServices::Expand is
+URI::ShortUrlServices::Expand is a expander for shorted URL with a simple redirection.
+This library use the Wedata Database "Shorturlservices" or same format JSON file.
 
 # AUTHOR
 
