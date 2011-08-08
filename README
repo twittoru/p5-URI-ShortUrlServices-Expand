@@ -12,6 +12,8 @@ SYNOPSIS
 DESCRIPTION
     URI::ShortUrlServices::Expand is a expander for shorted URL with a simple redirection.
     This library use the Wedata Database ,,Shorturlservices'' or same format JSON file.
+    
+    inspire form os0x's reurl.pl <https://gist.github.com/65204>
 
 AUTHOR
     Tor Ozaki <tor.ozaki@gmail.com>
