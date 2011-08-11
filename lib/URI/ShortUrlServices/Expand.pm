@@ -11,13 +11,13 @@ sub new {
     my $class = shift;
     my $source = shift;
     my $self = bless {
-        tinyurl => Regexp::Assemble->new,
-        http => HTTP::Lite->new,
+        _re => Regexp::Assemble->new,
+        _http => HTTP::Lite->new,
     }, $class;
 
-    $self->{http}->http11_mode(1);
-    $self->{http}->method('HEAD');
-    $self->{http}->add_req_header('User-Agent', "HTTP::Lite/$HTTP::Lite::VERSION URI::ReURL ver:$VERSION");
+    $self->{_http}->http11_mode(1);
+    $self->{_http}->method('HEAD');
+    $self->{_http}->add_req_header('User-Agent', "HTTP::Lite/$HTTP::Lite::VERSION URI::ReURL ver:$VERSION");
 
     defined($source) ? $self->_get_shortservies_from_url($source) : $self->_get_shortservies_from_wedata;
 
@@ -29,18 +29,19 @@ sub _get_shortservies_from_url{
     my $self = shift;
     my $url = shift;
 
-    $self->{http}->method('GET');
-    my $res = $self->{http}->request($url)
+    $self->{_http}->method('GET');
+    my $res = $self->{_http}->request($url)
         or die "Unabel to get ShortUrlServices: $!";
-    $self->{http}->method('HEAD');
 
-    if (my $content = $self->{http}->body())
+    if (my $content = $self->{_http}->body())
     {
         for my $row ( @{ from_json( $content ) } )
         {
-            $self->{tinyurl}->add($row->{data}->{domain});
+            $self->{_re}->add($row->{data}->{domain});
         }
     }
+
+    $self->{_http}->reset();
 }
 
 sub _get_shortservies_from_wedata {
@@ -50,18 +51,24 @@ sub _get_shortservies_from_wedata {
     my $wedata = WebService::Wedata->new;
     my $db = $wedata->get_database('ShortUrlServices');
     foreach my $item (@{$db->get_items}){
-        $self->{tinyurl}->add($item->{data}->{domain});
+        $self->{_re}->add($item->{data}->{domain});
     }
 }
 
 sub expand {
     my ($self,$url) = @_;
-    while (defined ($self->{tinyurl}->match($url)))
+
+    $self->{_http}->method('HEAD');
+
+    while (defined ($self->{_re}->match($url)))
     {
-        my $req = $self->{http}->request($url) or return;
-        last unless defined $self->{http}->get_header('Location');
-        $url = @{$self->{http}->get_header('Location')}[0];
+        my $req = $self->{_http}->request($url) or return;
+        last unless defined $self->{_http}->get_header('Location');
+        $url = @{$self->{_http}->get_header('Location')}[0];
     }
+
+    $self->{_http}->reset();
+
     $url;
 }
 
